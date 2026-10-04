@@ -1,0 +1,17 @@
+security/                      ★ PROMPT 16
+├── docs/SECURITY_REPORT.md    ★ سند گزارش امنیتی
+├── docs/PENTEST_CHECKLIST.md  ★ چک‌لیست تست نفوذ
+├── src/
+│   ├── rate-limit.ts          ★ محدودسازی درخواست
+│   ├── device-fingerprint.ts  ★ اثر انگشت دستگاه
+│   ├── pii-crypto.ts          ★ رمزنگاری PII/KYC در rest
+│   ├── withdrawal-guard.ts    ★ whitelist + time-lock برداشت
+│   ├── anti-fraud.ts          ★ ضد تقلب MLM
+│   └── waf/nginx-waf.conf     ★ WAF-ready config
+deployment/                    ★ PROMPT 17
+├── docker-compose.prod.yml
+├── k8s/*.yaml  (Helm chart)
+├── .github/workflows/ci.yml
+├── mobile/                    ★ React Native (APK/AAB + iOS)
+├── pwa/                       ★ manifest + service-worker
+└── docs/ADMIN_MANUAL.md  SETUP.md

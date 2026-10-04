@@ -1,0 +1,19 @@
+daric/
+├── contracts/                  ★ audit-ready
+│   ├── audit/slither.config.json, mythril.config.json, FINDINGS.md
+├── security/
+│   ├── bug-bounty/
+│   │   ├── POLICY.md           ★ سند برنامه
+│   │   ├── immunefi.json       ★ تعریف برنامه
+│   │   └── scope.md
+│   └── launch/
+│       ├── launch-flags.ts     ★ سقف برداشت beta (feature flags)
+│       └── beta-config.json
+├── e2e/                        ★ اجرایی کامل
+│   ├── playwright.config.ts
+│   ├── cross-module-flow.spec.ts
+│   ├── security.spec.ts
+│   └── load-test.js            ★ k6
+└── launch/
+    ├── beta-launch.sh          ★ اسکریپت لانچ نرم
+    └── monitoring/alerts.yml

@@ -1,0 +1,31 @@
+# /etc/nginx/conf.d/daric-waf.conf
+limit_req_zone $binary_remote_addr zone=api:10m rate=10r/s;
+limit_conn_zone $binary_remote_addr zone=conns:10m;
+
+server {
+  listen 443 ssl http2;
+  ssl_protocols TLSv1.3;
+  ssl_ciphers HIGH:!aNULL:!MD5;
+
+  # Security headers
+  add_header Strict-Transport-Security "max-age=63072000; includeSubDomains; preload" always;
+  add_header Content-Security-Policy "default-src 'self'; frame-ancestors 'none'" always;
+  add_header X-Content-Type-Options nosniff always;
+  add_header X-Frame-Options DENY always;
+  add_header Referrer-Policy strict-origin-when-cross-origin always;
+
+  # مسدودسازی payload های شناخته‌شده (به‌علاوه ModSecurity/OWASP CRS در production)
+  if ($request_uri ~* "(union.*select|<script|\.\./|wp-admin|\.env)") { return 403; }
+
+  location /api/ {
+    limit_req zone=api burst=20 nodelay;
+    limit_conn conns 20;
+    client_max_body_size 10m;          # جلوگیری از upload bomb
+    proxy_pass http://api-gateway:8080;
+  }
+  location /kyc/ {
+    client_max_body_size 25m;
+    allow 10.0.0.0/8; deny all;        # KYC upload فقط از داخل VPC gateway
+  }
+}
+# ModSecurity: SecRuleEngine On + OWASP CRS 4.x نصب — ruleset در /etc/modsecurity.d/

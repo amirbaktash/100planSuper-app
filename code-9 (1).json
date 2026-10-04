@@ -1,0 +1,9 @@
+{
+  "compilerOptions": {
+    "target": "ES2022", "module": "commonjs", "strict": true,
+    "experimentalDecorators": true,   // ✅ رفع خطای @audited
+    "emitDecoratorMetadata": true,
+    "esModuleInterop": true, "skipLibCheck": true,
+    "paths": { "@daric/shared": ["./packages/shared/src/index.ts"] }
+  }
+}

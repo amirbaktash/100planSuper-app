@@ -1,0 +1,24 @@
+name: CI/CD
+on: [push]
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20, cache: npm }
+      - run: ./verify-phase5.sh          # ★ همه فازهای ۱-۵ build+test
+      - run: npm audit --audit-level=high
+      - run: npx playwright test e2e/    # ★ flow کامل فاز ۶
+  security:
+    runs-on: ubuntu-latest
+    steps:
+      - run: ./contracts/audit.sh        # Slither + Mythril
+      - run: trivy fs --severity HIGH,CRITICAL .
+  deploy:
+    needs: [verify, security]
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - run: docker compose -f deployment/docker-compose.prod.yml build
+      - run: helm upgrade daric ./deployment/k8s --atomic --timeout 10m
+      # Blue-green: ترافیک پس از healthcheck /healthz سرویس‌ها سوییچ می‌شود

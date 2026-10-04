@@ -1,0 +1,13 @@
+  security-tests:
+    runs-on: ubuntu-latest
+    needs: verify
+    steps:
+      - uses: actions/checkout@v4
+      - run: npx playwright test e2e/security.spec.ts
+      - run: docker run --rm -v $PWD:/src aquasec/trivy fs --severity HIGH,CRITICAL /src
+  load-test:
+    runs-on: ubuntu-latest
+    needs: deploy    # روی staging
+    steps:
+      - run: k6 run e2e/load-test.js
+        env: { E2E_API: "https://staging.daric.fund/api" }

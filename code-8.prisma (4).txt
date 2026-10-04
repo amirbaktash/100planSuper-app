@@ -1,0 +1,23 @@
+// packages/database/prisma/schema.prisma — تنها schema پروژه (User فقط یک بار)
+generator client { provider = "prisma-client-js" }
+datasource db { provider = "postgresql"; url = env("DATABASE_URL") }
+
+model User {          // ← فقط همین یک تعریف در کل پروژه (رفع تداخل mlm)
+  id            String   @id @default(cuid())
+  phone         String   @unique
+  clubTier      String   @default("BRONZE")
+  kycStatus     String   @default("NONE")
+  kycLevel      Int      @default(0)
+  twoFASecret   String?
+  security      Json?
+  referralCode  String   @unique
+  referredById  String?
+  referredBy    User?    @relation("RefTree", fields: [referredById], references: [id])
+  referrals     User[]   @relation("RefTree")
+  referral      Referral?
+  createdAt     DateTime @default(now())
+  // ... بقیه فیلدهای فاز ۴ بدون تغییر
+}
+
+// + همه مدل‌های فاز ۲-۵ (Referral, Commission, WheelSegment, Tour, Policy,
+//   Permission, MediaAsset, AdminAuditLog, ...) در همین فایل — بدون تغییر محتوا

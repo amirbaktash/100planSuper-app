@@ -1,0 +1,16 @@
+groups:
+- name: beta-alerts
+  rules:
+  - alert: WithdrawalCapNear
+    expr: beta_withdraw_usd_today / 25000 > 0.8
+    for: 5m
+    annotations: { summary: "⚠️ ۸۰٪ سقف روزانه برداشت مصرف شد" }
+  - alert: AccountingDrift
+    expr: trial_balance_diff != 0
+    for: 1m
+    annotations: { summary: "🚨 عدم توازن دفتر — توقف فوری برداشت!" }
+  - alert: FraudFlagSpike
+    expr: increase(fraud_flags_total[1h]) > 5
+    annotations: { summary: "🚨 موج تقلب احتمالی" }
+  - alert: HighP95Latency
+    expr: histogram_quantile(0.95, rate(http_request_duration_seconds_bucket[5m])) > 0.5

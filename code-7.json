@@ -1,0 +1,16 @@
+{
+  "name": "Daric Fund",
+  "project_url": "https://daric.fund",
+  "bounty": {
+    "type": "smart_contract_and_web",
+    "critical_max": "25000", "high_max": "5000",
+    "medium_max": "1000", "low_max": "200", "currency": "USD"
+  },
+  "scope": [
+    { "target": "0x<DaricVault>", "type": "blockchain" },
+    { "target": "https://api.daric.fund", "type": "web" },
+    { "target": "https://app.daric.fund", "type": "web" }
+  ],
+  "contact": { "email": "security@daric.fund", "immunefi_profile": "daric" },
+  "rules": { "no_dos": true, "no_mainnet_attack": true, "staging_only": true }
+}

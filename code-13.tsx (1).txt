@@ -1,0 +1,23 @@
+const NAV_ITEMS = [
+  { href: "/", label: "داشبورد", icon: "🏠" },
+  { href: "/nav", label: "NAV داریک", icon: "📊" },
+  { href: "/exchange", label: "صرافی", icon: "💱" },
+  { href: "/exchange/p2p", label: "P2P", icon: "🤝" },
+  { href: "/wallet", label: "کیف پول", icon: "💰" },
+  { href: "/gold-silver", label: "طلا و نقره", icon: "🥇" },
+  { href: "/loans", label: "وام من", icon: "🏦" },
+  { href: "/club", label: "باشگاه مشتریان", icon: "🏅" },
+  { href: "/games/wheel", label: "گردونه شانس", icon: "🎡" },
+  { href: "/tools/calculators", label: "محاسبه‌گرها", icon: "📈" },
+  { href: "/tourism", label: "گردشگری", icon: "✈️" },           // ★
+  { href: "/tourism/bookings", label: "رزروهای من", icon: "🎫" }, // ★
+  { href: "/insurance", label: "بیمه", icon: "🛡️" },            // ★
+  { href: "/insurance/my", label: "بیمه‌نامه‌ها", icon: "📄" },   // ★
+  { href: "/chat", label: "پشتیبانی", icon: "💬" },
+  // ادمین (RBAC-aware)
+  { href: "/admin", label: "پنل ادمین", icon: "🛠️", adminOnly: true },   // ★
+  { href: "/admin/cms", label: "محتوا و بنر", icon: "🖼️", adminOnly: true }, // ★
+  { href: "/admin/rbac", label: "سطوح دسترسی", icon: "🔑", adminOnly: true }, // ★
+  { href: "/admin/audit", label: "Audit Log", icon: "🧾", adminOnly: true },  // ★
+  // ... (قبلی‌ها)
+];

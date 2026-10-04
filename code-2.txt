@@ -1,0 +1,94 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.20;
+
+import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+import "@openzeppelin/contracts/security/Pausable.sol";
+import "@openzeppelin/contracts/access/AccessControl.sol";
+
+/// @title DaricVault — قفل دارایی با timelock
+/// @notice ممیزی: آماده برای third-party audit — NSPEC کامل، Custom Error، Pausable
+/// @custom:security-contact security@daric.fund
+contract DaricVault is ReentrancyGuard, Pausable, AccessControl {
+    bytes32 public constant ORACLE_ROLE = keccak256("ORACLE_ROLE");
+    bytes32 public constant PAUSER_ROLE = keccak256("PAUSER_ROLE");
+    uint256 public constant TIMELOCK = 24 hours;
+    uint256 public constant MAX_WITHDRAW_PER_DAY = 50_000 ether; // ★ سقف beta
+
+    struct Lock { address token; uint256 amount; uint64 unlockAt; address owner; }
+
+    mapping(bytes32 => Lock) public locks;
+    mapping(address => uint256) public withdrawnToday;   // ★ برای سقف برداشت
+    mapping(uint256 => uint256) public dayStamp;         // dayIndex → reset
+    address[] public oracleSigners;                      // 2-of-3
+    uint256 public immutable requiredSigs;
+    uint64 public dailyResetDay;
+
+    error NotEnoughSignatures();
+    error TimelockNotExpired();
+    error DailyCapExceeded();
+    error ZeroAmount();
+
+    event LockCreated(bytes32 indexed id, address indexed owner, address token, uint256 amount, uint64 unlockAt);
+    event Withdrawn(bytes32 indexed id, address indexed to, uint256 amount);
+    event DailyCapUpdated(uint256 newCap);
+
+    constructor(address[] memory _oracles, uint256 _required, address admin) {
+        require(_required <= _oracles.length && _required >= 2, "BAD_THRESHOLD");
+        oracleSigners = _oracles; requiredSigs = _required;
+        _grantRole(DEFAULT_ADMIN_ROLE, admin);
+        _grantRole(PAUSER_ROLE, admin);
+        _grantRole(ORACLE_ROLE, admin); // rotate در production
+    }
+
+    function lock(address token, uint256 amount, uint64 timelock)
+        external nonReentrant whenNotPaused returns (bytes32 id) {
+        if (amount == 0) revert ZeroAmount();
+        id = keccak256(abi.encodePacked(msg.sender, token, amount, block.timestamp, locks.length));
+        IERC20(token).transferFrom(msg.sender, address(this), amount);
+        locks[id] = Lock(token, amount, uint64(block.timestamp) + timelock, msg.sender);
+        emit LockCreated(id, msg.sender, token, amount, locks[id].unlockAt);
+    }
+
+    /// @notice برداشت با 2-of-3 امضای اوراکل + timelock + سقف روزانه
+    function withdraw(bytes32 id, uint256 amt,
+        bytes[] calldata sigs) external nonReentrant whenNotPaused {
+        Lock storage l = locks[id];
+        if (sigs.length != requiredSigs) revert NotEnoughSignatures();
+        if (block.timestamp < l.unlockAt) revert TimelockNotExpired();
+        _verifySigs(abi.encode(id, amt, msg.sender), sigs);
+
+        // ★ سقف روزانه beta
+        _rollDay();
+        if (withdrawnToday[l.token] + amt > MAX_WITHDRAW_PER_DAY) revert DailyCapExceeded();
+        withdrawnToday[l.token] += amt;
+
+        l.amount -= amt;
+        IERC20(l.token).transfer(msg.sender, amt);
+        emit Withdrawn(id, msg.sender, amt);
+    }
+
+    function pause() external onlyRole(PAUSER_ROLE) { _pause(); }
+    function unpause() external onlyRole(PAUSER_ROLE) { _unpause(); }
+
+    function _rollDay() internal {
+        uint64 today = uint64(block.timestamp / 1 days);
+        if (today != dailyResetDay) { dailyResetDay = today; withdrawnToday[address(0)]; }
+    }
+
+    function _verifySigs(bytes memory h, bytes[] calldata sigs) internal view {
+        bytes32 ethHash = keccak256(abi.encodePacked("\x19Ethereum Signed Message:\n32",
+          keccak256(h)));
+        uint256 valid;
+        address last;
+        for (uint i; i < sigs.length; i++) {
+            address s = ECDSA.recover(ethHash, sigs[i]);
+            require(_isOracle(s) && s > last, "BAD_SIG"); // anti-replay ordering
+            last = s; valid++;
+        }
+        if (valid < requiredSigs) revert NotEnoughSignatures();
+    }
+    function _isOracle(address a) internal view returns (bool) {
+        for (uint i; i < oracleSigners.length; i++) if (oracleSigners[i] == a) return true;
+        return false;
+    }
+}

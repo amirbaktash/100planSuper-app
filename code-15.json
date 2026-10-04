@@ -1,0 +1,11 @@
+{
+  "scripts": {
+    "build:all": "./verify-phase6.sh",
+    "test:all": "npm test --workspaces && npx hardhat test --prefix contracts",
+    "test:e2e": "npx playwright test e2e/",
+    "test:load": "k6 run e2e/load-test.js",
+    "audit:contracts": "bash contracts/audit/audit-runner.sh",
+    "launch:beta": "bash launch/beta-launch.sh",
+    "zip:all": "bash build-zips.sh"
+  }
+}

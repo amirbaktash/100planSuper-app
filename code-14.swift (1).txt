@@ -1,0 +1,7 @@
+فاز ۱: قراردادها (DaricVault, SalesVault, NavOracle)
+فاز ۲: NAV، صرافی/P2P، کیف پول، طلا/نقره، Oracle
+فاز ۳: وام ۸۰٪ + موتور حسابداری دوطرفه (قلب مالی)
+فاز ۴: Auth/KYC/Chat، باشگاه MLM 25/12/6، گردونه + ماشین‌حساب‌ها
+فاز ۵: گردشگری، بیمه، پنل ادمین کل (RBAC + CMS + Audit)
+        ── همه فینانس‌ها → Event Bus → Accounting
+        ── همه خریدها (Tourism/Insurance/Gold/Casino/Investment) → MLM

@@ -1,0 +1,15 @@
+{
+  "phase": "BETA_SOFT_LAUNCH",
+  "duration_weeks": 4,
+  "entry": "invite_only",
+  "invite_codes": 200,
+  "limits": {
+    "withdraw_user_daily_usd": 500,
+    "withdraw_global_daily_usd": 25000,
+    "loan_max_usd": 1000,
+    "wheel_daily_spins": 3
+  },
+  "rollback": { "trigger": "متغیر env BETA_PAUSED=true → pause() در قرارداد + تسویه صف برداشت", "rto_minutes": 15 },
+  "kpis": { "uptime_pct": 99.5, "p95_latency_ms": 500, "accounting_drift": 0,
+            "fraud_flags_max": 5, "complaints_max": 10 }
+}
