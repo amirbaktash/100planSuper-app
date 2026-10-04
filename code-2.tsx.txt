@@ -1,0 +1,42 @@
+"use client";
+import { useState } from "react";
+
+const COLORS = ["#ef4444","#f59e0b","#10b981","#3b82f6","#8b5cf6",
+                "#ec4899","#14b8a6","#f97316","#6366f1","#84cc16"];
+
+export default function Wheel({ segments }: { segments: { index: number; label: string }[] }) {
+  const [rot, setRot] = useState(0);
+  const [spinning, setSpinning] = useState(false);
+  const [result, setResult] = useState<any>(null);
+
+  async function spin() {
+    setSpinning(true); setResult(null);
+    const res = await fetch("/api/games/wheel/spin", { method: "POST" })
+      .then(r => r.json());
+    setRot(prev => prev + 360 * 5 + (360 - res.segment * 36)); // هر خانه ۳۶°
+    setTimeout(() => { setResult(res); setSpinning(false); }, 4200);
+  }
+
+  return (
+    <div dir="rtl" className="flex flex-col items-center gap-4 p-6">
+      <div className="relative w-80 h-80 transition-transform duration-[4000ms] ease-out"
+        style={{ transform: `rotate(${rot}deg)` }}>
+        {segments.map((s, i) => (
+          <div key={s.index} className="absolute inset-0 flex justify-center"
+            style={{ transform: `rotate(${i * 36}deg)`,
+              clipPath: "polygon(50% 0, 100% 18%, 100% 82%, 50% 100%)",
+              background: COLORS[i] }}>
+            <span className="mt-3 text-white text-xs">{s.label}</span>
+          </div>))}
+      </div>
+      <button onClick={spin} disabled={spinning}
+        className="px-8 py-3 bg-amber-500 rounded-full text-white font-bold disabled:opacity-50">
+        {spinning ? "در حال چرخش..." : "بچرخان (۱ USDT)"}
+      </button>
+      {result && <div className="p-4 bg-green-50 rounded-lg">
+        🎉 خانه {result.segment}: {result.label} — {Number(result.net) >= 0
+          ? `+result.netUSDT‘:‘{result.net} USDT` : `result.netUSDT‘:‘{result.net} USDT`}
+      </div>}
+    </div>
+  );
+}

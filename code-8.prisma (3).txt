@@ -1,0 +1,60 @@
+model AdminUser {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String
+  roles     RoleAssignment[]
+  lastLogin DateTime?
+}
+
+model Role {
+  id          String  @id @default(cuid())
+  name        String  @unique          // SUPERADMIN | FINANCE | SUPPORT | CONTENT | COMPLIANCE
+  permissions Permission[]
+}
+
+model Permission {
+  id        String @id @default(cuid())
+  roleId    String
+  role      Role   @relation(fields: [roleId], references: [id])
+  resource  String // loans | tours | policies | wheel | mlm | kyc | accounting | cms | users
+  action    String // VIEW | EDIT | APPROVE     ★ سه سطح دسترسی
+  @@unique([roleId, resource, action])
+}
+
+model MediaAsset {                  // گالری عکس/بنر
+  id        String @id @default(cuid())
+  url       String
+  type      String                 // IMAGE | BANNER | VIDEO | DOC
+  title     String?
+  tags      String[]               // ["tours", "istanbul", "banner-home"]
+  width     Int?
+  height    Int?
+  sizeKb    Int
+  uploadedBy String
+  createdAt DateTime @default(now())
+}
+
+model PageContent {                 // WYSIWYG — محتوای هر صفحه
+  id        String @id @default(cuid())
+  slug      String @unique         // "home" | "about" | "tours/istanbul" | "faq"
+  title     String
+  blocks    Json                   // [{ type: "hero", bannerMediaId, html }, { type: "richtext", html }]
+  status    String @default("DRAFT") // DRAFT → PENDING → PUBLISHED  (نیاز به APPROVE)
+  updatedBy String
+  publishedBy String?
+  publishedAt DateTime?
+}
+
+model AdminAuditLog {
+  id        String @id @default(cuid())
+  adminId   String
+  action    String                 // APPROVE_LOAN | EDIT_RATE | PUBLISH_PAGE | ...
+  resource  String
+  resourceId String?
+  before    Json?
+  after     Json?
+  ip        String
+  createdAt DateTime @default(now())
+  @@index([adminId, createdAt])
+  @@index([resource, resourceId])
+}

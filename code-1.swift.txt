@@ -1,0 +1,26 @@
+services/
+├── user-service/            ★ PROMPT 10
+│   └── src/
+│       ├── auth-otp.ts      ★ ثبت‌نام + OTP
+│       ├── kyc.ts           ★ مدارک + تشخیص چهره
+│       ├── security.ts      ★ 2FA/تنظیمات امنیتی
+│       ├── chat.ts          ★ چت ۱-به-۱
+│       └── index.ts
+├── mlm-service/             ★ PROMPT 11
+│   └── src/
+│       ├── referral.ts      ★ کد معرف + درخت
+│       ├── commissions.ts   ★ پورسانت 25/12/6 + سطح
+│       ├── tiers.ts         ★ برنز/نقره/طلا/الماس
+│       ├── consumer.ts      ★ رویدادهای ۵ ماژول
+│       └── index.ts
+├── game-service/            ★ PROMPT 12
+│   └── src/
+│       ├── wheel.ts         ★ گردونه ۱۰ خانه
+│       ├── pl-calcs.ts      ★ ماشین‌حساب سود/زیان
+│       └── index.ts
+└── dashboard/app/
+    ├── (auth)/register, login, kyc
+    ├── chat/
+    ├── club/                ★ باشگاه + درخت
+    ├── games/wheel/
+    └── tools/calculators/

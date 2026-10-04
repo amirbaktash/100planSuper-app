@@ -1,0 +1,33 @@
+// dashboard/app/admin/page.tsx — شِل ادمین با سایدبار RBAC-aware
+export default function AdminShell({ perms }: { perms: string[] }) {
+  const items = [
+    { href: "/admin/kyc",      label: "KYC",        need: "kyc:VIEW" },
+    { href: "/admin/loans",    label: "وام‌ها",      need: "loans:VIEW" },
+    { href: "/admin/accounting", label: "حسابداری",  need: "accounting:VIEW" },
+    { href: "/admin/mlm",      label: "باشگاه",     need: "mlm:EDIT" },
+    { href: "/admin/wheel",    label: "گردونه",     need: "wheel:EDIT" },
+    { href: "/admin/tours",    label: "تورها",      need: "tours:EDIT" },      // ★
+    { href: "/admin/policies", label: "بیمه",       need: "policies:VIEW" },   // ★
+    { href: "/admin/media",    label: "گالری",      need: "cms:EDIT" },        // ★
+    { href: "/admin/pages",    label: "صفحات",      need: "cms:EDIT" },        // ★ WYSIWYG
+    { href: "/admin/rbac",     label: "دسترسی‌ها",  need: "rbac:EDIT" },       // ★
+    { href: "/admin/audit",    label: "Audit Log",  need: "users:VIEW" },      // ★
+  ].filter(i => perms.includes(i.need));
+  return <Sidebar items={items} />;
+}
+
+// WYSIWYG: Tiptap editor + MediaPicker sidebar
+export function PageEditor({ page }: { page: any }) {
+  const editor = useEditor({
+    extensions: [StarterKit, Image.configure({ inline: true })],
+    content: page.blocks });
+  return (
+    <div className="flex gap-4">
+      <div className="flex-1 border rounded p-4" dir="rtl">
+        <EditorContent editor={editor} />
+        <button onClick={() => save({ blocks: editor?.getJSON() }, /* → PENDING */)}
+          className="mt-4 px-4 py-2 bg-blue-600 text-white rounded">ثبت برای تأیید</button>
+      </div>
+      <MediaPicker tag="banner" onSelect={url => editor?.chain().focus().setImage({ src: url }).run()} />
+    </div>);
+}

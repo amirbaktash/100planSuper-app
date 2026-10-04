@@ -1,0 +1,32 @@
+model WheelSegment {
+  id        Int     @id @default(autoincrement())
+  index     Int     @unique               // 0..9
+  label     String                        // «۳۰٪ جایزه» / «۰» / «گردونه مجانی»
+  weight    Int                           // وزن احتمال (احتمال = weight / Σweights)
+  prizeType String  // CASH | TOKEN_DARIC | FREE_SPIN | NOTHING
+  prizeValue Decimal @db.Decimal(20, 2)    // مبلغ یا تعداد
+  active    Boolean @default(true)
+}
+
+model WheelSpin {
+  id        String   @id @default(cuid())
+  userId    String
+  cost      Decimal  @db.Decimal(20, 2)
+  segmentId Int
+  prizeType String
+  prizeValue Decimal @db.Decimal(20, 2)
+  netResult Decimal  @db.Decimal(20, 2)    // prize − cost
+  serverSeed String                          // provably-fair
+  clientSeed String
+  nonce     Int
+  createdAt DateTime @default(now())
+  @@index([userId, createdAt])
+}
+
+model HousePL {                                // لاگ سود/زیان صندوق از بازی
+  id        String   @id @default(cuid())
+  period    DateTime
+  wagered   Decimal  @db.Decimal(20, 2)
+  paidOut   Decimal  @db.Decimal(20, 2)
+  houseEdge Decimal  @db.Decimal(20, 2)
+}

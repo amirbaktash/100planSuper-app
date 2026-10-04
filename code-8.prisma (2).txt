@@ -1,0 +1,44 @@
+model Referral {                  // لینک درخت — L1 نامحدود، پورسانت تا ۳ سطح
+  id          String  @id @default(cuid())
+  userId      String  @unique
+  parentId    String?
+  path        String                    // "/root/a/b/c" برای query سریع زیرمجموعه‌ها
+  depth       Int                       // عمق از ریشه
+  user        User    @relation(fields: [userId], references: [id])
+  @@index([parentId])
+  @@index([path])
+}
+
+model CommissionRule {
+  id        String @id @default(cuid())
+  category  String   // TOURISM | INSURANCE | INVESTMENT | GOLDSILVER | CASINO
+  level     Int      // 1 | 2 | 3
+  pct       Decimal  @db.Decimal(5, 2)   // پیش‌فرض: 25 / 12 / 6
+  tier      String?  // null = عمومی؛ BRONZE/SILVER/GOLD/DIAMOND = override
+  active    Boolean  @default(true)
+  @@unique([category, level, tier])
+}
+
+model Commission {
+  id          String   @id @default(cuid())
+  beneficiaryId String                     // دریافت‌کننده
+  sourceUserId  String                     // از خریدِ چه کسی
+  category      String
+  level         Int
+  baseAmount    Decimal  @db.Decimal(20, 2)
+  pct           Decimal  @db.Decimal(5, 2)
+  amount        Decimal  @db.Decimal(20, 2)
+  refId         String                       // bookingId / policyId / tradeId
+  status        String @default("PENDING")   // PENDING → PAID (در payout batch)
+  batchId       String?
+  @@unique([category, refId, beneficiaryId, level])   // idempotency
+}
+
+model PayoutBatch {
+  id        String   @id @default(cuid())
+  total     Decimal  @db.Decimal(20, 2)
+  count     Int
+  status    String   @default("PENDING")     // PENDING | EXECUTED | FAILED
+  executedBy String?
+  createdAt DateTime @default(now())
+}

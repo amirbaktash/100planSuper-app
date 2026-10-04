@@ -1,0 +1,53 @@
+model Tour {
+  id          String   @id @default(cuid())
+  title       String
+  direction   String   // IR_TO_WORLD | WORLD_TO_IR | DOMESTIC
+  destination String                          // استانبول، دبی، مکه، کیش...
+  origin      String
+  days        Int
+  priceUSD    Decimal  @db.Decimal(14, 2)
+  currency    String   @default("USDT")       // ارز پایه قیمت
+  images      String[]                        // از گالری ادمین (Prompt 15)
+  description String
+  capacity    Int
+  booked      Int      @default(0)
+  departures  TourDeparture[]
+  active      Boolean  @default(true)
+}
+
+model TourDeparture {
+  id        String   @id @default(cuid())
+  tourId    String
+  tour      Tour     @relation(fields: [tourId], references: [id])
+  date      DateTime
+  capacity  Int
+  booked    Int      @default(0)
+  status    String   @default("OPEN")       // OPEN | FULL | CLOSED
+}
+
+model InventoryItem {                       // هتل/قطار/اتوبوس/هواپیما
+  id         String  @id @default(cuid())
+  type       String  // HOTEL | TRAIN | BUS | FLIGHT
+  provider   String  // supplier API یا own
+  title      String
+  meta       Json    // { city, stars, roomType | { from,to,class } }
+  priceUSD   Decimal @db.Decimal(14, 2)
+  stock      Int                            // ظرفیت باقیمانده
+  active     Boolean @default(true)
+}
+
+model Booking {
+  id          String   @id @default(cuid())
+  userId      String
+  kind        String   // TOUR | HOTEL | TRAIN | BUS | FLIGHT
+  itemId      String                          // tourId یا inventoryItemId
+  travelers   Int
+  passengers  Json                            // [{ fullName, passportNo, birthDate }]
+  amountUSD   Decimal  @db.Decimal(14, 2)
+  paymentLines Json                           // [{ asset: "USDT", amount, rate }] ★ پرداخت هر ارز
+  status      String   @default("PENDING")    // PENDING | PAID | CONFIRMED | CANCELLED
+  voucherUrl  String?
+  refCode     String?                         // کد معرف → MLM
+  createdAt   DateTime @default(now())
+  @@index([userId, status])
+}

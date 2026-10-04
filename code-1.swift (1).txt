@@ -1,0 +1,21 @@
+services/
+├── tourism-service/         ★ PROMPT 13
+│   └── src/
+│       ├── catalog.ts       ★ تور دوطرفه + موجودی
+│       ├── booking.ts       ★ رزرو + پرداخت چند-ارزی
+│       ├── inventory.ts     ★ هتل/قطار/اتوبوس/هواپیما
+│       └── index.ts
+├── insurance-service/       ★ PROMPT 14
+│   └── src/
+│       ├── products.ts      ★ سفر/سلامت/عمر/اموال
+│       ├── policy.ts        ★ صدور + کد معرف
+│       ├── claims.ts        ★ مطالبه خسارت
+│       └── index.ts
+├── admin-service/           ★ PROMPT 15
+│   └── src/
+│       ├── rbac.ts          ★ View/Edit/Approve
+│       ├── media.ts         ★ گالری/بنر/WYSIWYG
+│       ├── audit.ts         ★ Audit Log کامل
+│       └── index.ts
+└── dashboard/app/
+    ├── tourism/  ├── insurance/  └── admin/(cms|media|users|rbac)

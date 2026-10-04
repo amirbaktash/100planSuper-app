@@ -1,0 +1,23 @@
+const NAV_ITEMS = [
+  { href: "/",               label: "داشبورد",           icon: "🏠" },
+  { href: "/nav",            label: "NAV داریک",         icon: "📊" },
+  { href: "/exchange",       label: "صرافی",             icon: "💱" },
+  { href: "/exchange/p2p",   label: "P2P",               icon: "🤝" },
+  { href: "/wallet",         label: "کیف پول",           icon: "💰" },
+  { href: "/gold-silver",    label: "طلا و نقره",        icon: "🥇" },
+  { href: "/loans",          label: "وام من",            icon: "🏦" },
+  { href: "/loans/simulator",label: "شبیه‌ساز وام",      icon: "🧮" },
+  { href: "/club",           label: "باشگاه مشتریان",    icon: "🏅" },        // ★
+  { href: "/club/tree",      label: "شبکه من",           icon: "🌳" },        // ★
+  { href: "/chat",           label: "پشتیبانی",          icon: "💬" },        // ★
+  { href: "/games/wheel",    label: "گردونه شانس",       icon: "🎡" },        // ★
+  { href: "/tools/calculators", label: "محاسبه‌گر سود/زیان", icon: "📈" },     // ★
+  { href: "/profile/security", label: "امنیت",           icon: "🔐" },        // ★
+  // ادمین
+  { href: "/admin/kyc",          label: "KYC",            icon: "🪪", adminOnly: true },   // ★
+  { href: "/admin/chats",        label: "چت‌ها",          icon: "🎧", adminOnly: true },   // ★
+  { href: "/admin/loans",        label: "وام‌ها",         icon: "📋", adminOnly: true },
+  { href: "/admin/accounting",   label: "حسابداری",       icon: "📚", adminOnly: true },
+  { href: "/admin/mlm",          label: "نرخ‌های باشگاه",  icon: "⚙️", adminOnly: true }, // ★
+  { href: "/admin/wheel",        label: "گردونه",         icon: "🎯", adminOnly: true },   // ★
+];

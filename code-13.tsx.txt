@@ -1,0 +1,15 @@
+import { Tree } from "react-d3-tree";
+
+export default function Genealogy({ data }: { data: any }) {
+  const toTree = (id: string): any => {
+    const children = data.nodes.filter((n: any) => n.parentId === id)
+      .map((n: any) => toTree(n.userId));
+    return { name: id.slice(0, 6), attributes: { tier: "clubTier" }, children: children.length ? children : undefined };
+  };
+  return (
+    <div dir="ltr" className="h-[500px] bg-gray-900 rounded">
+      <Tree data={toTree(data.root)} orientation="vertical"
+        nodeSvgShape={{ shape: "circle", shapeProps: { r: 10, fill: "#f0b429" } }} />
+    </div>
+  );
+}

@@ -1,0 +1,38 @@
+model InsuranceProduct {
+  id           String  @id @default(cuid())
+  type         String  // TRAVEL | HEALTH | LIFE | PROPERTY
+  name         String
+  coverageUSD  Decimal @db.Decimal(14, 2)
+  premiumUSD   Decimal @db.Decimal(14, 2)   // حق بیمه
+  durationDays Int
+  terms        Json                          // شرایط و استثناها
+  active       Boolean @default(true)
+}
+
+model Policy {
+  id          String   @id @default(cuid())
+  policyNo    String   @unique              // INS-1403-XXXXXX
+  userId      String
+  productId   String
+  product     InsuranceProduct @relation(fields: [productId], references: [id])
+  premiumPaid Decimal  @db.Decimal(14, 2)
+  refCode     String?                       // ★ کد معرف هنگام خرید
+  referredById String?                       // resolved از refCode
+  status      String   @default("ACTIVE")   // ACTIVE | EXPIRED | CLAIMED | CANCELLED
+  validFrom   DateTime
+  validTo     DateTime
+  claims      Claim[]
+  createdAt   DateTime @default(now())
+}
+
+model Claim {
+  id          String  @id @default(cuid())
+  policyId    String
+  policy      Policy  @relation(fields: [policyId], references: [id])
+  amountUSD   Decimal @db.Decimal(14, 2)
+  reason      String
+  docs        String[]                       // آپلود مدارک خسارت
+  status      String  @default("PENDING")    // PENDING | APPROVED | REJECTED | PAID
+  reviewedBy  String?
+  paidAt      DateTime?
+}

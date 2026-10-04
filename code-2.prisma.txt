@@ -1,0 +1,74 @@
+model User {
+  id            String   @id @default(cuid())
+  phone         String   @unique
+  email         String?  @unique
+  passwordHash  String?
+  referralCode  String   @unique               // کد معرف
+  referredById  String?
+  referredBy    User?    @relation("RefTree", fields: [referredById], references: [id])
+  referrals     User[]   @relation("RefTree")
+  clubTier      String   @default("BRONZE")    // BRONZE | SILVER | GOLD | DIAMOND
+  kycStatus     String   @default("NONE")      // NONE | PENDING | APPROVED | REJECTED
+  kycLevel      Int      @default(0)
+  twoFASecret   String?
+  security      Json?    // { loginAlerts, whitelistedIPs, sessionTimeout }
+  createdAt     DateTime @default(now())
+  otpCodes      OtpCode[]
+  kycDocs       KycDoc[]
+  sessions      Session[]
+}
+
+model OtpCode {
+  id        String   @id @default(cuid())
+  phone     String
+  code      String                        // bcrypt ذخیره شود
+  purpose   String   // REGISTER | LOGIN | WITHDRAW | 2FA
+  expiresAt DateTime
+  used      Boolean  @default(false)
+  attempts  Int      @default(0)
+  @@index([phone, purpose])
+}
+
+model KycDoc {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  type      String   // NATIONAL_ID | PASSPORT | SELFIE | LIVENESS_VIDEO
+  fileUrl   String                        // S3 با دسترسی محدود
+  status    String   @default("PENDING")  // PENDING | APPROVED | REJECTED
+  faceScore Decimal? @db.Decimal(5, 4)    // امتیاز تطبیق چهره
+  reviewedBy String?
+  createdAt DateTime @default(now())
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  userId    String
+  token     String   @unique
+  ip        String
+  device    String
+  expiresAt DateTime
+  revoked   Boolean  @default(false)
+}
+
+model Conversation {
+  id        String  @id @default(cuid())
+  userId    String
+  adminId   String?
+  status    String  @default("OPEN")   // OPEN | CLOSED
+  messages  ChatMessage[]
+  @@unique([userId, status])           // چت باز یکتا per user
+}
+
+model ChatMessage {
+  id             String  @id @default(cuid())
+  conversationId String
+  conversation   Conversation @relation(fields: [conversationId], references: [id])
+  senderRole     String  // USER | ADMIN | SYSTEM
+  senderId       String
+  body           String
+  attachmentUrl  String?
+  readAt         DateTime?
+  createdAt      DateTime @default(now())
+  @@index([conversationId, createdAt])
+}
