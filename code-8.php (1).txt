@@ -1,0 +1,8 @@
+// routes/web.php — گروه‌بندی نهایی
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::prefix('investment')->group(/* sections, projects, portfolio, certificates, pnl */);
+    Route::prefix('startups')->group(/* hub, [startup], invest */);
+    Route::prefix('games')->group(/* [game], beta, forum */);
+    Route::prefix('laser')->group(/* venues, teams, reservations, ranking, chat */);
+    // ← روت‌های فازهای قبلی دست‌نخورده: wallet, mlm, loans, auth, admin
+});

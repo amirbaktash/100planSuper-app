@@ -1,0 +1,6 @@
+✅ contracts — DaricToken_Military, NAV_Oracle_Military (2-of-3+IPFS), Timelock 48h, Vault
+✅ nav-service          (port 4005)
+✅ exchange-service     (port 4010)
+✅ gold-silver-fund     (port 4020)
+✅ oracle-service
+✅ dashboard (Next.js)

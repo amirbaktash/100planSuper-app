@@ -1,0 +1,10 @@
+const NAV_ITEMS = [
+  { href: "/",                label: "داشبورد",          icon: "🏠" },
+  { href: "/nav",             label: "NAV داریک",        icon: "📊" },   // ★ جدید
+  { href: "/verify/[hash]",   label: "تأیید گزارش",      icon: "🔍", hidden: true },
+  { href: "/exchange",        label: "صرافی",            icon: "💱" },   // ★ جدید
+  { href: "/exchange/p2p",    label: "P2P سهام و داریک", icon: "🤝" },   // ★ جدید
+  { href: "/wallet",          label: "کیف پول",          icon: "💰" },   // ★ جدید
+  { href: "/gold-silver",     label: "طلا و نقره",       icon: "🥇" },   // ★ جدید
+  { href: "/admin/reports",   label: "آپلود گزارش",      icon: "⚙️", adminOnly: true },
+];

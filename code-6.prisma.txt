@@ -1,0 +1,48 @@
+model JournalEntry {
+  id         String        @id @default(cuid())
+  seq        Int           @unique           // شماره ترتیبی پیوسته
+  source     String                          // loan | exchange | wallet | gold | mlm
+  refId      String
+  narrative  String
+  fiscalDate DateTime
+  hash       String                          // hash-chain ضد دستکاری
+  prevHash   String
+  lines      JournalLine[]
+  @@unique([source, refId])                   // idempotency
+}
+
+model JournalLine {
+  id      String  @id @default(cuid())
+  entryId String
+  entry   JournalEntry @relation(fields: [entryId], references: [id])
+  account String
+  userId  String?
+  asset   String?
+  debit   Decimal @db.Decimal(30, 2)
+  credit  Decimal @db.Decimal(30, 2)
+  @@index([account, entryId])
+}
+
+model FiscalPeriod {
+  id       String   @id @default(cuid())
+  name     String   @unique                 // «۱۴۰۳-فروردین»
+  startDate DateTime
+  endDate  DateTime
+  status   String   @default("OPEN")        // OPEN | CLOSED
+  closedBy String?
+}
+
+model AuditLog {
+  id         String   @id @default(cuid())
+  eventType  String
+  payload    Json
+  processedAt DateTime @default(now())
+}
+
+model DeadLetter {
+  id        String @id @default(cuid())
+  eventType String
+  payload   Json
+  error     String
+  createdAt DateTime @default(now())
+}

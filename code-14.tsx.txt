@@ -1,0 +1,44 @@
+"use client";
+import { useEffect, useState } from "react";
+import dynamic from "next/dynamic";
+const LightChart = dynamic(() => import("@/components/TradingChart"), { ssr: false });
+
+export default function Exchange() {
+  const [pair, setPair] = useState("DARIC/USDT");
+  const [book, setBook] = useState<any>({ bids: [], asks: [] });
+  const [price, setPrice] = useState<number>();
+
+  useEffect(() => {
+    const ws = new WebSocket(process.env.NEXT_PUBLIC_WS!);
+    ws.onopen = () => ws.send(JSON.stringify({ action: "subscribe", channel: `depth:${pair}` }));
+    ws.onmessage = (e) => { const m = JSON.parse(e.data); setBook(m.data); };
+    fetch(`process.env.NEXTPUBLICAPI/price/{process.env.NEXT_PUBLIC_API}/price/process.env.NEXTP​UBLICA​PI/price/{pair.split("/")[0]}`)
+      .then(r => r.json()).then(d => setPrice(d.price));
+    return () => ws.close();
+  }, [pair]);
+
+  return (
+    <div dir="rtl" className="grid grid-cols-12 gap-4 p-4">
+      <div className="col-span-3 bg-gray-900 text-green-400 text-xs">
+        <h3>خرید (Bid)</h3>
+        {book.bids?.map((b: any, i: number) => (
+          <div key={i} className="flex justify-between px-2 py-0.5">
+            <span>{b.price?.toLocaleString()}</span><span>{b.qty}</span>
+          </div>))}
+      </div>
+      <div className="col-span-6">
+        <div className="text-2xl font-bold">{price?.toLocaleString()} USDT</div>
+        <TradingChart pair={pair} />
+      </div>
+      <div className="col-span-3 bg-gray-900 text-red-400 text-xs">
+        <h3>فروش (Ask)</h3>
+        {book.asks?.map((a: any, i: number) => (
+          <div key={i} className="flex justify-between px-2 py-0.5">
+            <span>{a.price?.toLocaleString()}</span><span>{a.qty}</span>
+          </div>))}
+      </div>
+      <OrderForm pair={pair} />
+      <OpenOrders />
+    </div>
+  );
+}

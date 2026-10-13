@@ -1,0 +1,35 @@
+// dashboard/app/loans/page.tsx
+export default function LoanSchedule({ loan }: { loan: any }) {
+  return (
+    <div dir="rtl">
+      <table className="w-full text-sm">
+        <thead><tr className="border-b">
+          <th>قسط</th><th>سررسید</th><th>مبلغ</th><th>سود</th>
+          <th>آزادسازی وثیقه</th><th>وضعیت</th></tr></thead>
+        <tbody>
+          {loan.schedule.map((r: any) => (
+            <tr key={r.no} className={`border-b ${r.status === "LATE" ? "bg-red-50" :
+              r.status === "PAID" ? "bg-green-50" : ""}`}>
+              <td>{r.no}</td>
+              <td>{new Date(r.dueDate).toLocaleDateString("fa-IR")}</td>
+              <td>{Number(r.total).toLocaleString()} $</td>
+              <td className="text-gray-500">{Number(r.interest).toLocaleString()}</td>
+              <td>
+                <div className="flex items-center gap-2">
+                  <LockBadge locked={r.no > loan.paidInstallments + 1} />
+                  <div className="w-24 h-2 bg-gray-200 rounded">
+                    <div className="h-2 bg-blue-600 rounded"
+                      style={{ width: `${(r.no / loan.schedule.length) * 100}%` }} />
+                  </div>
+                  {r.collateralUnlockPct}٪
+                </div>
+              </td>
+              <td>{r.status === "PAID" ? "✅ پرداخت‌شده" :
+                   r.status === "LATE" ? `⚠️ معوق (${r.lateDays} روز)` : "در انتظار"}</td>
+            </tr>))}
+        </tbody>
+      </table>
+      <Simulator defaultRate={loan.annualRate} />
+    </div>
+  );
+}

@@ -1,0 +1,17 @@
+services/
+├── loan-service/                 ★ PROMPT 8
+│   └── src/
+│       ├── types.ts
+│       ├── collateral.ts         ★ قفل/آزادسازی متناسب
+│       ├── schedule.ts           ★ جدول اقساط
+│       ├── simulator.ts          ★ ماشین‌حساب
+│       ├── eventbus.ts           ★ Bus مشترک
+│       └── index.ts
+├── accounting-service/           ★ PROMPT 9
+│   └── src/
+│       ├── chart-of-accounts.ts
+│       ├── journal.ts            ★ قید دوطرفه اتمیک
+│       ├── reports.ts            ★ تراز، دفتر کل، دوره مالی
+│       ├── consumers.ts          ★ مصرف رویداد همه ماژول‌ها
+│       └── index.ts
+└── packages/eventbus/            ★ پکیج مشترک (Redis Streams)

@@ -1,0 +1,14 @@
+// WithdrawModal — با هشدار Timelock
+function WithdrawModal({ asset, max }: { asset: string; max: number }) {
+  const [open, setOpen] = useState(false);
+  const [msg, setMsg] = useState("");
+  const submit = async (amount: string, address: string) => {
+    const r = await fetch("/api/wallet/withdraw", { method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ asset, amount, address }) }).then(r => r.json());
+    setMsg(r.timelockUntil
+      ? `⚠️ برداشت بزرگ — پس از تأیید ۲ ادمین و Timelock ۴۸ ساعته (${new Date(r.timelockUntil).toLocaleString("fa-IR")}) انجام می‌شود`
+      : "✅ در صف پرداخت قرار گرفت");
+  };
+  // ... modal form با 2FA code
+}

@@ -1,0 +1,27 @@
+"use client";
+export default function Wallet() {
+  const [balances, setBalances] = useState<any[]>([]);
+  useEffect(() => { fetch("/api/wallet/balances").then(r => r.json()).then(setBalances); }, []);
+
+  return (
+    <div dir="rtl" className="p-6">
+      <h1 className="text-xl font-bold mb-4"> کیف پول من</h1>
+      <table className="w-full text-sm">
+        <thead><tr className="border-b"><th>دارایی</th><th>موجود</th><th>در سفارش</th><th>عملیات</th></tr></thead>
+        <tbody>
+          {balances.map(b => (
+            <tr key={b.asset} className="border-b hover:bg-gray-50">
+              <td className="font-bold">{b.asset}</td>
+              <td>{Number(b.amount).toLocaleString()}</td>
+              <td className="text-orange-600">{Number(b.locked).toLocaleString()}</td>
+              <td className="flex gap-2">
+                <DepositModal asset={b.asset} />
+                <WithdrawModal asset={b.asset} max={b.amount - b.locked} />
+                <a href={`/exchange?asset=${b.asset}`}>ترید</a>
+              </td>
+            </tr>))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
