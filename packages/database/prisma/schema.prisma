@@ -1,0 +1,397 @@
+// ═══════════════════════════════════════════════════════════════
+// DARIC Super App — Prisma Schema (همه ماژول‌ها در یک فایل)
+// ═══════════════════════════════════════════════════════════════
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ── کاربر، OTP، KYC، نشست ──
+model User {
+  id            String    @id @default(cuid())
+  phone         String    @unique
+  email         String?   @unique
+  passwordHash  String?
+  referralCode  String    @unique
+  referredById  String?
+  referredBy    User?     @relation("RefTree", fields: [referredById], references: [id])
+  referrals     User[]    @relation("RefTree")
+  clubTier      String    @default("BRONZE") // BRONZE | SILVER | GOLD | DIAMOND
+  kycStatus     String    @default("NONE")   // NONE | PENDING | APPROVED | REJECTED
+  kycLevel      Int       @default(0)
+  twoFASecret   String?
+  security      Json?
+  createdAt     DateTime  @default(now())
+  otpCodes      OtpCode[]
+  kycDocs       KycDoc[]
+  sessions      Session[]
+  balances      Balance[]
+  loans         Loan[]
+  commissions   Commission[] @relation("Receiver")
+  wheelSpins    WheelSpin[]
+}
+
+model OtpCode {
+  id        String   @id @default(cuid())
+  phone     String
+  code      String // bcrypt
+  purpose   String // REGISTER | LOGIN | WITHDRAW | 2FA
+  expiresAt DateTime
+  used      Boolean  @default(false)
+  attempts  Int      @default(0)
+  @@index([phone, purpose])
+}
+
+model KycDoc {
+  id         String   @id @default(cuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id])
+  type       String // NATIONAL_ID | PASSPORT | SELFIE | LIVENESS_VIDEO
+  fileUrl    String
+  status     String   @default("PENDING")
+  faceScore  Decimal? @db.Decimal(5, 4)
+  reviewedBy String?
+  createdAt  DateTime @default(now())
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  userId    String
+  token     String   @unique
+  ip        String
+  device    String
+  expiresAt DateTime
+  revoked   Boolean  @default(false)
+}
+
+// ── چت ۱-به-۱ کاربر/ادمین ──
+model Conversation {
+  id       String        @id @default(cuid())
+  userId   String
+  adminId  String?
+  status   String        @default("OPEN") // OPEN | CLOSED
+  messages ChatMessage[]
+  @@unique([userId, status])
+}
+
+model ChatMessage {
+  id             String       @id @default(cuid())
+  conversationId String
+  conversation   Conversation @relation(fields: [conversationId], references: [id])
+  senderRole     String // USER | ADMIN | SYSTEM
+  senderId       String
+  body           String
+  attachmentUrl  String?
+  readAt         DateTime?
+  createdAt      DateTime     @default(now())
+  @@index([conversationId, createdAt])
+}
+
+// ── کیف پول ──
+model Balance {
+  userId   String
+  user     User   @relation(fields: [userId], references: [id])
+  asset    String // USDT | DARIC | SHARE | EUR | IRR
+  amount   Decimal @db.Decimal(20, 8)
+  locked   Decimal @db.Decimal(20, 8) @default(0)
+  @@id([userId, asset])
+}
+
+model Withdrawal {
+  id        String   @id @default(cuid())
+  userId    String
+  asset     String
+  amount    Decimal  @db.Decimal(20, 8)
+  address   String
+  status    String // QUEUED | PENDING_DUAL | SENT | DONE | CANCELLED
+  eta       DateTime // +48h Timelock
+  createdAt DateTime @default(now())
+}
+
+// ── صرافی ──
+model P2pOffer {
+  id           String   @id @default(cuid())
+  sellerId     String
+  buyerId      String?
+  asset        String // DARIC | SHARE
+  amount       Decimal  @db.Decimal(20, 8)
+  pricePerUnit Decimal  @db.Decimal(20, 8)
+  paymentMethod String
+  status       String   @default("OPEN") // OPEN | FILLED | CANCELLED
+  createdAt    DateTime @default(now())
+}
+
+// ── طلا/نقره ──
+model MetalHolding {
+  userId String
+  metal  String // GOLD | SILVER
+  grams  Decimal @db.Decimal(20, 4)
+  @@id([userId, metal])
+}
+
+model MetalTrade {
+  id       String   @id @default(cuid())
+  userId   String
+  metal    String
+  side     String // BUY | SELL
+  grams    Decimal  @db.Decimal(20, 4)
+  priceUSD Decimal  @db.Decimal(20, 2)
+  totalUSD Decimal  @db.Decimal(20, 2)
+  createdAt DateTime @default(now())
+}
+
+model PhysicalSettlement {
+  id             String   @id @default(cuid())
+  userId         String
+  metal          String
+  grams          Decimal  @db.Decimal(20, 4)
+  deliveryMethod String // vault_pickup | courier
+  status         String   @default("PENDING_ADMIN")
+  feeUSD         Decimal  @db.Decimal(20, 2)
+  createdAt      DateTime @default(now())
+}
+
+// ── NAV ──
+model NAVReport {
+  id         String   @id @default(cuid())
+  reportDate DateTime
+  period     String
+  totalNAV   String
+  navPerToken String
+  reportHash String   @unique
+  ipfsCid    String?
+  payload    Json
+  createdAt  DateTime @default(now())
+}
+
+// ── وام ──
+model Loan {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  principal   Decimal  @db.Decimal(20, 2)
+  months      Int
+  annualRate  String
+  status      String   @default("ACTIVE") // ACTIVE | PAID | FORECLOSED
+  schedule    Json // LoanScheduleRow[]
+  collateral  Json // CollateralSlice[]
+  createdAt   DateTime @default(now())
+}
+
+// ── حسابداری (Hash-Chain) ──
+model JournalEntry {
+  id         String   @id @default(cuid())
+  source     String
+  refId      String
+  narrative  String
+  fiscalDate DateTime
+  seq        Int      @unique
+  hash       String   @unique
+  prevHash   String
+  lines      JournalLine[]
+  @@unique([source, refId]) // idempotency
+}
+
+model JournalLine {
+  id       String       @id @default(cuid())
+  entryId  String
+  entry    JournalEntry @relation(fields: [entryId], references: [id])
+  account  String
+  userId   String?
+  asset    String?
+  debit    Decimal      @db.Decimal(20, 8)
+  credit   Decimal      @db.Decimal(20, 8)
+}
+
+// ── باشگاه (MLM) ──
+model Referral {
+  userId    String   @id
+  parentId  String
+  depth     Int
+  createdAt DateTime @default(now())
+}
+
+model Commission {
+  id         String   @id @default(cuid())
+  receiverId String
+  receiver   User     @relation("Receiver", fields: [receiverId], references: [id])
+  level      Int
+  amount     Decimal  @db.Decimal(20, 2)
+  category   String
+  fromUserId String
+  createdAt  DateTime @default(now())
+}
+
+model CommissionRule {
+  id       String  @id @default(cuid())
+  category String
+  level    Int
+  tier     String?
+  pct      String
+  active   Boolean @default(true)
+}
+
+// ── گردونه ──
+model WheelSegment {
+  id         Int      @id @default(autoincrement())
+  index      Int      @unique // 0..9
+  label      String
+  weight     Int
+  prizeType  String // CASH | TOKEN_DARIC | FREE_SPIN | NOTHING
+  prizeValue Decimal  @db.Decimal(20, 2)
+  active     Boolean  @default(true)
+}
+
+model WheelSpin {
+  id         String   @id @default(cuid())
+  userId     String
+  cost       Decimal  @db.Decimal(20, 2)
+  segmentId  Int
+  prizeType  String
+  prizeValue Decimal  @db.Decimal(20, 2)
+  netResult  Decimal  @db.Decimal(20, 2)
+  serverSeed String
+  clientSeed String
+  nonce      Int
+  createdAt  DateTime @default(now())
+  @@index([userId, createdAt])
+}
+
+// ── گردشگری ──
+model Tour {
+  id        String   @id @default(cuid())
+  title     String
+  origin    String
+  destination String
+  departure DateTime
+  days      Int
+  priceUSD  Decimal  @db.Decimal(20, 2)
+  seats     Int
+  sold      Int      @default(0)
+  status    String   @default("OPEN") // OPEN | FULL | CLOSED
+  bookings  Booking[]
+}
+
+model Booking {
+  id         String   @id @default(cuid())
+  userId     String
+  tourId     String
+  tour       Tour     @relation(fields: [tourId], references: [id])
+  seats      Int
+  passengers Json
+  status     String   @default("PENDING") // PENDING | PAID | CANCELLED
+  totalUSD   Decimal  @db.Decimal(20, 2)
+  paidUSD    Decimal? @db.Decimal(20, 2)
+  createdAt  DateTime @default(now())
+}
+
+// ── بیمه ──
+model InsuranceProduct {
+  id           String   @id @default(cuid())
+  name         String
+  kind         String // TRAVEL | HEALTH | LIFE | PROPERTY
+  premiumPct   Float
+  coverageUSD  Decimal  @db.Decimal(20, 2)
+  active       Boolean  @default(true)
+  policies     Policy[]
+}
+
+model Policy {
+  id          String            @id @default(cuid())
+  userId      String
+  productId   String
+  product     InsuranceProduct  @relation(fields: [productId], references: [id])
+  policyNo    String            @unique
+  premiumUSD  Decimal           @db.Decimal(20, 2)
+  coverageUSD Decimal           @db.Decimal(20, 2)
+  refCode     String?
+  status      String            @default("ACTIVE")
+  claims      Claim[]
+  createdAt   DateTime          @default(now())
+}
+
+model Claim {
+  id         String   @id @default(cuid())
+  policyId   String
+  policy     Policy   @relation(fields: [policyId], references: [id])
+  userId     String
+  amountUSD  Decimal  @db.Decimal(20, 2)
+  reason     String
+  docs       Json
+  status     String   @default("NEW") // NEW | APPROVED | REJECTED
+  approvedBy String?
+  createdAt  DateTime @default(now())
+}
+
+// ── ادمین: RBAC، رسانه، صفحات، Audit ──
+model Admin {
+  id        String   @id @default(cuid())
+  username  String   @unique
+  roles     Role[]
+  auditLogs AdminAuditLog[]
+}
+
+model Role {
+  id          String       @id @default(cuid())
+  name        String       @unique
+  permissions Permission[]
+  admins      Admin[]
+}
+
+model Permission {
+  id       String @id @default(cuid())
+  resource String
+  action   String // VIEW | EDIT | APPROVE
+  roles    Role[]
+  @@unique([resource, action])
+}
+
+model Media {
+  id         String   @id @default(cuid())
+  url        String
+  type       String   @default("IMAGE")
+  title      String?
+  tags       String[]
+  width      Int?
+  height     Int?
+  uploadedBy String
+  createdAt  DateTime @default(now())
+}
+
+model Page {
+  slug        String    @id
+  title       String
+  blocks      Json
+  status      String    @default("DRAFT") // DRAFT | PENDING | PUBLISHED
+  updatedBy   String?
+  approvedBy  String?
+  publishedAt DateTime?
+}
+
+model AdminAuditLog {
+  id        String   @id @default(cuid())
+  actorId   String
+  actor     Admin    @relation(fields: [actorId], references: [id])
+  action    String
+  resource  String
+  detail    Json?
+  createdAt DateTime @default(now())
+  @@index([actorId, createdAt])
+}
+
+// ── امنیت: گزارش باگ (Immunefi) ──
+model BountyReport {
+  id         String   @id @default(cuid())
+  reporter   String
+  title      String
+  severity   String // CRITICAL | HIGH | MEDIUM | LOW
+  target     String
+  poc        String
+  status     String   @default("NEW") // NEW | TRIAGED | PAID | DUPLICATE
+  rewardUSD  Decimal  @db.Decimal(20, 2)
+  createdAt  DateTime @default(now())
+}

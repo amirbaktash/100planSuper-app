@@ -1,0 +1,23 @@
+groups:
+  - name: beta-alerts
+    rules:
+      - alert: WithdrawalCapNear
+        expr: beta_withdraw_usd_today / 25000 > 0.8
+        for: 5m
+        annotations: { summary: "⚠️ ۸۰٪ سقف روزانه برداشت مصرف شد" }
+      - alert: AccountingDrift
+        expr: trial_balance_diff != 0
+        for: 1m
+        annotations: { summary: "🚨 عدم توازن دفتر — توقف فوری برداشت!" }
+      - alert: FraudFlagSpike
+        expr: increase(fraud_flags_total[1h]) > 5
+        for: 5m
+        annotations: { summary: "🚨 موج تقلب احتمالی" }
+      - alert: HighP95Latency
+        expr: histogram_quantile(0.95, rate(http_request_duration_seconds_bucket[5m])) > 0.5
+        for: 10m
+        annotations: { summary: "🐢 p95 بالاتر از ۵۰۰ms" }
+      - alert: NavOracleStale
+        expr: time() - nav_last_update_timestamp > 86400
+        for: 5m
+        annotations: { summary: "🚨 NAV اوراکل بیش از ۲۴ ساعت کهنه است" }

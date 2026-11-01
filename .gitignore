@@ -1,0 +1,22 @@
+# DARIC Super App — dependencies & build
+node_modules/
+dist/
+.next/
+*.tsbuildinfo
+
+# env & secrets — هیچ secret در repo
+.env
+.env.prod
+.env.local
+
+# قراردادها
+contracts/artifacts/
+contracts/cache/
+contracts/typechain-types/
+
+# لاگ و موقت
+*.log
+.DS_Store
+
+# zips تحویلی
+*.zip
