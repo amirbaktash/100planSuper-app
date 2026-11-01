@@ -20,3 +20,17 @@ contracts/typechain-types/
 
 # zips تحویلی
 *.zip
+
+# Capacitor — خروجی‌های build (خود پروژه نیتیو نگه داشته می‌شود)
+dashboard/android/app/build/
+dashboard/android/.gradle/
+dashboard/android/build/
+dashboard/android/capacitor-cordova-android-plugins/build/
+dashboard/android/app/src/main/assets/public/
+dashboard/ios/App/App/public/
+dashboard/ios/App/build/
+dashboard/ios/App/DerivedData/
+dashboard/ios/App/CapApp-SPM/.build/
+dashboard/ios/**/xcuserdata/
+dashboard/dist/
+release/*.zip

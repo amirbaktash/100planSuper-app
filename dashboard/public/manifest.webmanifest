@@ -1,0 +1,25 @@
+{
+  "name": "داریک — سوپر‌اپ ۱۰۰پلن",
+  "short_name": "داریک",
+  "description": "سوپر‌اپ مالی داریک — توکن NAV محور، صرافی، طلا، وام، باشگاه و بازی",
+  "lang": "fa",
+  "dir": "rtl",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "display_override": ["standalone", "minimal-ui"],
+  "orientation": "any",
+  "background_color": "#070b18",
+  "theme_color": "#0b1229",
+  "categories": ["finance", "business"],
+  "icons": [
+    { "src": "./daric-token-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "./daric-token-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" },
+    { "src": "./icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" }
+  ],
+  "shortcuts": [
+    { "name": "صرافی", "url": "./#/exchange", "icons": [{ "src": "./daric-token-512.png", "sizes": "512x512" }] },
+    { "name": "کیف پول", "url": "./#/wallet", "icons": [{ "src": "./daric-token-512.png", "sizes": "512x512" }] },
+    { "name": "NAV داریک", "url": "./#/nav", "icons": [{ "src": "./daric-token-512.png", "sizes": "512x512" }] }
+  ]
+}

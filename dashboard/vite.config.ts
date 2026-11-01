@@ -5,6 +5,7 @@ import path from "path";
 // DARIC Super App — dashboard
 // منطق اصلی (NAV، دفتر، پورسانت، وام، OrderBook) از packages/shared لود می‌شود.
 export default defineConfig({
+  base: "./", // مسیر نسبی — قابل میزبانی در هر مسیری + مناسب Capacitor
   plugins: [react()],
   resolve: {
     alias: {
