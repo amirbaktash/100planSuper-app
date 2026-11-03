@@ -34,3 +34,6 @@ dashboard/ios/App/CapApp-SPM/.build/
 dashboard/ios/**/xcuserdata/
 dashboard/dist/
 release/*.zip
+*.zip
+!release/*.zip
+dashboard/public/*.zip

@@ -10,6 +10,7 @@ import {
   Tourism, Insurance, AdminReports, AdminKYC, AdminAccounting, AdminRBAC,
   AdminAudit, NotFound,
 } from "./pages";
+import { DownloadPage } from "./download";
 
 const MAIN_NAV = [
   { section: "منوی اصلی" },
@@ -31,6 +32,8 @@ const MAIN_NAV = [
   { href: "/insurance", label: "بیمه", icon: "🛡️" },
   { href: "/chat", label: "چت پشتیبانی", icon: "💬" },
   { href: "/settings", label: "تنظیمات", icon: "⚙️" },
+  { section: "دانلود" },
+  { href: "/download", label: "دانلود بسته‌ها", icon: "⬇️" },
 ];
 
 const ADMIN_NAV = [
@@ -59,6 +62,7 @@ const ROUTES: Record<string, React.ComponentType<any>> = {
   "/insurance": Insurance,
   "/chat": Chat,
   "/settings": Settings,
+  "/download": DownloadPage,
   "/admin/reports": AdminReports,
   "/admin/kyc": AdminKYC,
   "/admin/accounting": AdminAccounting,
