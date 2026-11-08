@@ -51,6 +51,29 @@ export function Dashboard() {
         </div>
       </div>
 
+      {/* ⬇️ دانلود بسته نصبی — مستقیم از صفحه اصلی */}
+      <div
+        className="card mb"
+        style={{
+          display: "flex", alignItems: "center", gap: 18, flexWrap: "wrap",
+          borderColor: "rgba(240,180,41,.55)",
+          background: "linear-gradient(90deg, rgba(240,180,41,.12), var(--panel) 60%)",
+        }}
+      >
+        <span style={{ fontSize: 38 }}>📦</span>
+        <div style={{ flex: 1, minWidth: 240 }}>
+          <b style={{ fontSize: 15 }}>دانلود بسته کامل سوپر‌اپ داریک</b>
+          <div className="muted" style={{ fontSize: 12 }}>
+            وب (PWA) + پروژه اندروید (APK) + پروژه iOS (IPA) + کد کامل منبع + راهنمای فارسی —
+            ۵۵۳ فایل، حجم ۳۲MB
+          </div>
+        </div>
+        <a href="./DARIC-SuperApp-Full.zip" download="DARIC-SuperApp-Full.zip" className="btn gold" style={{ padding: "12px 26px", fontSize: 14 }}>
+          ⬇️ دانلود فایل زیپ (۳۲MB)
+        </a>
+        <a href="#/download" className="btn">سایر نسخه‌ها ↓</a>
+      </div>
+
       <div className="grid g-4 mb">
         <div className="card stat">
           <div className="label">قیمت داریک (NAV محور)</div>
