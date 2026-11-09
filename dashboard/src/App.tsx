@@ -1,5 +1,5 @@
 // ═══════════════════════════════════════════════════════════════
-// DARIC Super App — روتر + لیوت (سایدبار منوی اصلی + ادمین)
+// 100plan Super App — روتر + لیوت (سایدبار منوی اصلی + ادمین)
 // منوی اصلی از مشخصات: داشبورد | سرمایه‌گذاری | استارتاپ | آرشا گیم |
 // تکاوُ لیزرتگ | کیف پول | شبکه | وام‌ها | تنظیمات
 // ═══════════════════════════════════════════════════════════════
@@ -96,8 +96,8 @@ export default function App() {
     <div className="layout">
       <aside className="sidebar">
         <div className="brand">
-          <img src="/daric-token-512.png" alt="DARIC" />
-          <h1>داریک<span>.</span><small>سوپر‌اپ ۱۰۰پلن — Capital App</small></h1>
+          <img src="/icons/icon-512.png" alt="لوگوی 100plan" />
+          <h1 dir="ltr">100<span>plan</span><small dir="rtl">سوپر‌اپ مالی · DARIC TOKEN</small></h1>
         </div>
         <NavList items={MAIN_NAV} route={route} />
         <NavList items={ADMIN_NAV} route={route} />
@@ -108,7 +108,7 @@ export default function App() {
             سقف وام: ${BETA_CONFIG.limits.loan_max_usd} · گردونه: {BETA_CONFIG.limits.wheel_daily_spins} چرخش/روز
           </div>
           <div className="muted" style={{ fontSize: 10.5, direction: "ltr", textAlign: "center" }}>
-            daric.fund · v1.0.0-beta
+            پروتوتایپ · v1.0.0-beta
           </div>
         </div>
       </aside>
@@ -116,14 +116,14 @@ export default function App() {
       <div className="main">
         <header className="topbar">
           <div className="row">
-            <img src="/daric-token-512.png" className="logo-mini" alt="" />
-            <b style={{ fontSize: 14 }}>داریک</b>
-            <span className="chip" style={{ color: "var(--gold)" }}>● زنده</span>
-            <span className="muted" dir="ltr">DARIC/USDT 1.84 +2.4%</span>
+            <img src="/icons/icon-192.png" className="logo-mini" alt="" />
+            <b style={{ fontSize: 14 }} dir="ltr">100plan</b>
+            <span className="chip" style={{ color: "var(--gold)" }}>● نسخهٔ نمایشی</span>
+            <span className="muted" dir="ltr">DEMO · DARIC/USDT 1.84 +2.4%</span>
           </div>
           <div className="userchip">
             <span className="badge gold">🥈 {ME.clubTier}</span>
-            <span className="badge green">✅ KYC L{ME.kycLevel}</span>
+            <span className="badge green">نمونهٔ KYC L{ME.kycLevel}</span>
             <div className="avatar">ع</div>
             <div style={{ lineHeight: 1.3 }}>
               <div style={{ fontSize: 12.5, fontWeight: 700 }}>{ME.name}</div>
@@ -133,6 +133,9 @@ export default function App() {
         </header>
 
         <main className="content">
+          <div className="alert warn" role="status" style={{ marginBottom: 14 }}>
+            <b>نسخهٔ نمایشی — برای پول واقعی یا اطلاعات هویتی استفاده نکنید.</b> موجودی، قیمت، NAV و KYC نمونه‌اند؛ داشبورد به سرویس مالی یا قرارداد مستقر متصل نیست.
+          </div>
           {Page ? <Page /> : <NotFound />}
         </main>
       </div>

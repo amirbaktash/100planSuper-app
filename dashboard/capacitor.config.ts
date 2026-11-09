@@ -1,9 +1,9 @@
 import type { CapacitorConfig } from "@capacitor/cli";
 
-// پوسته نیتیو DARIC — همان وب‌اپ داخل WebView اندروید/iOS
+// اپلیکیشن 100plan — همان وب‌اپ داخل WebView اندروید/iOS
 const config: CapacitorConfig = {
   appId: "fund.daric.app",
-  appName: "داریک",
+  appName: "100plan",
   webDir: "dist",
   backgroundColor: "#070b18",
   android: {

@@ -8,6 +8,11 @@ dist/
 .env
 .env.prod
 .env.local
+**/*.jks
+**/*.keystore
+**/*.p12
+**/*.pfx
+**/keystore.properties
 
 # قراردادها
 contracts/artifacts/
@@ -37,3 +42,4 @@ release/*.zip
 *.zip
 !release/*.zip
 dashboard/public/*.zip
+dashboard/public/SHA256SUMS.txt

@@ -903,7 +903,7 @@ export function NotFound() {
     <div className="center" style={{ padding: 80 }}>
       <div style={{ fontSize: 48 }}>🏛️</div>
       <h2 className="mt">صفحه پیدا نشد</h2>
-      <p className="muted mb">مسیر مورد نظر در سوپر‌اپ داریک وجود ندارد.</p>
+      <p className="muted mb">مسیر مورد نظر در سوپر‌اپ 100plan وجود ندارد.</p>
       <a href="#/" className="btn gold">بازگشت به داشبورد</a>
     </div>
   );

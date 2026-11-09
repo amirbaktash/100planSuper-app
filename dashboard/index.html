@@ -2,20 +2,20 @@
 <html lang="fa" dir="rtl">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/png" href="./daric-token-512.png" />
+    <link rel="icon" type="image/png" sizes="512x512" href="./icons/icon-512.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <meta name="theme-color" content="#0b1229" />
-    <meta name="description" content="داریک — سوپر‌اپ مالی ۱۰۰پلن | توکن NAV محور DARIC" />
+    <meta name="description" content="100plan — سوپر‌اپ مالی با توکن نمایشی DARIC؛ داده‌های این نسخه نمونه هستند." />
 
     <!-- PWA — قابل نصب روی اندروید و iOS -->
     <link rel="manifest" href="./manifest.webmanifest" />
-    <link rel="apple-touch-icon" href="./daric-token-512.png" />
+    <link rel="apple-touch-icon" href="./icons/apple-touch-icon.png" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-    <meta name="apple-mobile-web-app-title" content="داریک" />
+    <meta name="apple-mobile-web-app-title" content="100plan" />
 
-    <title>داریک | سوپر‌اپ ۱۰۰پلن</title>
+    <title>100plan | DARIC Token</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -23,9 +23,17 @@
       rel="stylesheet"
     />
     <script>
-      // ثبت Service Worker فقط در production (جلوگیری از کش در حالت dev)
-      if (!["localhost", "127.0.0.1"].includes(location.hostname) && "serviceWorker" in navigator) {
-        window.addEventListener("load", () => navigator.serviceWorker.register("./sw.js").catch(() => {}));
+      // Service Worker only works in a secure context (HTTPS, or localhost on this device).
+      // Skip Vite's dev server, but allow a built PWA served on localhost for local testing.
+      const localHost = ["localhost", "127.0.0.1", "[::1]"].includes(location.hostname);
+      const secureOrigin = location.protocol === "https:" || localHost;
+      const viteDevServer = location.port === "5173";
+      if (secureOrigin && !viteDevServer && "serviceWorker" in navigator) {
+        window.addEventListener("load", () => {
+          navigator.serviceWorker.register("./sw.js").catch((error) => {
+            console.warn("DARIC PWA service worker registration failed:", error);
+          });
+        });
       }
     </script>
   </head>

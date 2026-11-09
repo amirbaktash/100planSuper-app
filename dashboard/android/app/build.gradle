@@ -1,5 +1,19 @@
 apply plugin: 'com.android.application'
 
+// Release signing values live outside version control in android/keystore.properties.
+def keystorePropertiesFile = rootProject.file('keystore.properties')
+def keystoreProperties = new Properties()
+if (keystorePropertiesFile.exists()) {
+    keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+}
+def signingKeys = ['storeFile', 'storePassword', 'keyAlias', 'keyPassword']
+def hasReleaseSigning = keystorePropertiesFile.exists() && signingKeys.every {
+    keystoreProperties[it]?.toString()?.trim()
+}
+if (keystorePropertiesFile.exists() && !hasReleaseSigning) {
+    throw new GradleException('android/keystore.properties must define storeFile, storePassword, keyAlias, and keyPassword')
+}
+
 android {
     namespace = "fund.daric.app"
     compileSdk = rootProject.ext.compileSdkVersion
@@ -16,8 +30,21 @@ android {
             ignoreAssetsPattern = '!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~'
         }
     }
+    signingConfigs {
+        release {
+            if (hasReleaseSigning) {
+                keyAlias keystoreProperties['keyAlias']
+                keyPassword keystoreProperties['keyPassword']
+                storeFile rootProject.file(keystoreProperties['storeFile'])
+                storePassword keystoreProperties['storePassword']
+            }
+        }
+    }
     buildTypes {
         release {
+            if (hasReleaseSigning) {
+                signingConfig signingConfigs.release
+            }
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }

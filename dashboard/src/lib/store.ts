@@ -4,7 +4,7 @@
 // ═══════════════════════════════════════════════════════════════
 import { useSyncExternalStore } from "react";
 import {
-  OrderBook, Ledger, computeNAV, processPurchase, buildSchedule,
+  OrderBook, Ledger, computeNAV, processPurchase, buildSchedule, hashPayload,
   DEFAULT_SEGMENTS, TIERS, EXCHANGE_FEE, BETA_CONFIG,
   type AssetReport, type Order, type JournalEntry, type ClubTier,
 } from "@daric/shared";
@@ -230,7 +230,6 @@ export function go(path: string) {
 // ── اکشن‌های دامنه (فراخوانی منطق shared) ──
 export async function runNAV() {
   const res = computeNAV(ASSET_REPORT);
-  const { hashPayload } = await import("@daric/shared");
   const reportHash = await hashPayload(ASSET_REPORT);
   const nav = { navPerToken: res.navPerToken, totalNAV: res.totalNAV, reportHash };
   setState({ navCache: nav });

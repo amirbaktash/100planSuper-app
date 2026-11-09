@@ -1,5 +1,5 @@
 // ═══════════════════════════════════════════════════════════════
-// صفحات سوپر‌اپ داریک — همه ماژول‌های مشخصات
+// صفحات سوپر‌اپ مالی 100plan — ماژول‌های محصول و توکن DARIC
 // ═══════════════════════════════════════════════════════════════
 import { useEffect, useMemo, useState } from "react";
 import {
@@ -14,6 +14,7 @@ import {
   verifySpin, trialBalance, COA, computeNAV,
 } from "@daric/shared";
 import { fmt, usd } from "./lib/fmt";
+import { TokenLogo } from "./components/TokenLogo";
 
 export { fmt, usd };
 
@@ -39,10 +40,14 @@ export function Dashboard() {
     <div>
       <div className="hero" style={{ backgroundImage: "url(/daric-banner.png)" }}>
         <div className="hero-in">
-          <h2>سوپر‌اپ مالی <span>داریک</span> 🏛️</h2>
+          <div className="hero-token-lockup">
+            <TokenLogo size={42} />
+            <div><b>DARIC TOKEN</b><span>توکن داخلی 100plan · دادهٔ نمایشی</span></div>
+          </div>
+          <h2>سوپر‌اپ مالی <span>100plan</span> 🏛️</h2>
           <p>
-            توکن NAV‌محور داریک، صرافی، طلا و نقره، وام تا ۸۰٪ پورتفوی، باشگاه سه‌سطحی،
-            گردشگری، بیمه و بازی‌ها — همه در یک اپلیکیشن. دارایی واقعی، شفافیت روی‌چین.
+            ابزارهای سرمایه‌گذاری، صرافی، طلا و نقره، وام، باشگاه، گردشگری، بیمه و بازی‌ها — همه در یک اپلیکیشن.
+            اطلاعات و اتصال‌های مالی در این نسخه صرفاً نمونه‌اند.
           </p>
           <div className="row mt">
             <a href="#/nav" className="btn gold">📊 محاسبه NAV داریک</a>
@@ -62,10 +67,10 @@ export function Dashboard() {
       >
         <span style={{ fontSize: 38 }}>📦</span>
         <div style={{ flex: 1, minWidth: 240 }}>
-          <b style={{ fontSize: 15 }}>دانلود بسته کامل سوپر‌اپ داریک</b>
+          <b style={{ fontSize: 15 }}>دانلود بستهٔ کامل پروتوتایپ 100plan</b>
           <div className="muted" style={{ fontSize: 12 }}>
-            وب (PWA) + پروژه اندروید (APK) + پروژه iOS (IPA) + کد کامل منبع + راهنمای فارسی —
-            ۵۵۳ فایل، حجم ۳۲MB
+            خروجی وب + پروژه‌های Android/iOS + سورس و راهنمای فارسی؛ APK/IPA امضاشده داخل بسته نیست.
+            داده‌های برنامه نمایشی‌اند — حجم تقریبی ۳۲٫۷ MB
           </div>
         </div>
         <a href="./DARIC-SuperApp-Full.zip" download="DARIC-SuperApp-Full.zip" className="btn gold" style={{ padding: "12px 26px", fontSize: 14 }}>
@@ -76,7 +81,7 @@ export function Dashboard() {
 
       <div className="grid g-4 mb">
         <div className="card stat">
-          <div className="label">قیمت داریک (NAV محور)</div>
+          <div className="label token-label"><TokenLogo size={22} /><span>قیمت نمایشی DARIC (NAV)</span></div>
           <div className="value" style={{ color: "var(--gold)" }}>$1.84</div>
           <div className="sub" style={{ color: "var(--green)" }}>▲ 2.4% — ۲۴ ساعت</div>
           <Sparkline data={NAV_HISTORY} />
@@ -195,9 +200,9 @@ export function NavPage() {
 
   return (
     <div>
-      <div className="page-title">📊 NAV توکن داریک</div>
+      <div className="page-title title-with-token"><span>📊</span><TokenLogo size={27} /><span>NAV توکن DARIC</span></div>
       <div className="page-sub">
-        قیمت هر داریک = کل ارزش دارایی‌ها (NAV) ÷ عرضه کل (۱ میلیارد) — گزارش ماهانه با SHA-256 روی IPFS و امضای ۲-از-۳ اوراکل.
+        محاسبهٔ نمایشی NAV هر DARIC از روی داده‌های نمونه؛ این نسخه به دارایی واقعی، گزارش مستقل یا قرارداد مستقر متصل نیست.
       </div>
 
       <div className="alert info">
@@ -224,7 +229,7 @@ export function NavPage() {
         <div className="card" style={{ borderColor: "rgba(240,180,41,.4)" }}>
           <h3>💰 نتیجه محاسبه</h3>
           <div className="stat mb">
-            <div className="label">قیمت هر توکن داریک</div>
+            <div className="label token-label"><TokenLogo size={22} /><span>قیمت هر توکن DARIC</span></div>
             <div className="value" style={{ color: "var(--gold)", fontSize: 30 }}>${fmt(Number(preview.navPerToken), 4)}</div>
           </div>
           <div className="between mb"><span className="muted">کل NAV</span><b className="ltr">{usd(Number(preview.totalNAV))}</b></div>
@@ -309,10 +314,10 @@ export function Exchange() {
 
   return (
     <div>
-      <div className="page-title">💱 صرافی داریک</div>
+      <div className="page-title title-with-token"><span>💱</span><TokenLogo size={27} /><span>صرافی DARIC</span></div>
       <div className="page-sub">
-        دفتر سفارش زنده · جفت اصلی DARIC/USDT · کارمزد {EXCHANGE_FEE.base * 100}٪ پایه —{" "}
-        <b style={{ color: "var(--gold)" }}>{EXCHANGE_FEE.daric * 100}٪ با پرداخت داریک</b>
+        دفتر سفارش نمایشی · جفت اصلی <span className="token-pair"><TokenLogo size={18} decorative />DARIC/USDT</span> · کارمزد {EXCHANGE_FEE.base * 100}٪ پایه —{" "}
+        <b style={{ color: "var(--gold)" }}>{EXCHANGE_FEE.daric * 100}٪ با پرداخت DARIC</b>
       </div>
 
       <div className="grid" style={{ gridTemplateColumns: "1fr 300px 1fr", gap: 14 }}>
@@ -414,7 +419,7 @@ export function P2P() {
   ];
   return (
     <div>
-      <div className="page-title">🤝 P2P — داریک و سهام</div>
+      <div className="page-title title-with-token"><span>🤝</span><TokenLogo size={27} /><span>P2P — DARIC و سهام</span></div>
       <div className="page-sub">معامله مستقیم با اسکرو DaricVault — توکن فروشنده تا تأیید پرداخت خریدار قفل می‌شود.</div>
       <div className="alert warn">🔒 محدودیت P2P: فقط دارایی‌های داخلی DARIC و SHARE — سایر ارزها فقط در صرافی.</div>
       <div className="card">
@@ -424,7 +429,12 @@ export function P2P() {
             {offers.map((o) => (
               <tr key={o.id}>
                 <td className="ltr">{o.seller}</td>
-                <td><span className="badge gold">{o.asset}</span></td>
+                <td>
+                  <span className="badge gold asset-badge">
+                    {o.asset === "DARIC" && <TokenLogo size={17} decorative />}
+                    {o.asset}
+                  </span>
+                </td>
                 <td className="ltr">{fmt(o.amount, 0)}</td>
                 <td className="ltr">${o.price}</td>
                 <td>{o.method}</td>
@@ -476,7 +486,12 @@ export function Wallet() {
               const price = (PRICES as any)[b.asset] ?? (b.asset === "GOLD" ? PRICES.GOLD : b.asset === "SILVER" ? PRICES.SILVER : 1);
               return (
                 <tr key={b.asset}>
-                  <td><b>{b.asset}</b></td>
+                  <td>
+                    <span className="asset-name">
+                      {b.asset === "DARIC" && <TokenLogo size={26} decorative />}
+                      <b>{b.asset}</b>
+                    </span>
+                  </td>
                   <td className="ltr">{fmt(b.amount, b.asset === "GOLD" || b.asset === "SILVER" ? 2 : 2)}</td>
                   <td className="ltr" style={{ color: "var(--gold)" }}>{fmt(b.locked)}</td>
                   <td className="ltr">{usd(b.amount * price)}</td>

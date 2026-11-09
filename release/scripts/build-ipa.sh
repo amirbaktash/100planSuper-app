@@ -1,31 +1,36 @@
-#!/bin/bash
-# ═══════════════════════════════════════════════════════════════
-# ساخت فایل نصبی iOS (IPA) — فقط روی مک با Xcode
-# خروجی: App.ipa از طریق Product → Archive → Distribute
-# ═══════════════════════════════════════════════════════════════
-set -e
-if [ "$(uname)" != "Darwin" ]; then
-  echo "⚠️ ساخت IPA نیاز به مک + Xcode دارد."
-  echo "   جایگزین فوری: نسخه وب (پوشه web/) را روی سرور HTTPS بگذارید"
-  echo "   و در Safari گوشی: Share → Add to Home Screen"
+#!/usr/bin/env bash
+# Build/sync the web bundle and open the Xcode project; archive/export is manual in Xcode.
+set -euo pipefail
+
+if [[ "$(uname -s)" != "Darwin" ]]; then
+  echo "Building an iOS archive/IPA requires macOS and Xcode." >&2
+  echo "For a no-Mac preview, publish the web/ folder over HTTPS and use Add to Home Screen." >&2
   exit 1
 fi
 
-echo "🔹 ۱. build وب..."
-(cd dashboard && npm install --silent && npm run build)
+SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+"$SCRIPT_DIR/sync-web.sh"
 
-echo "🔹 ۲. sync به پروژه iOS..."
-(cd dashboard && npx cap sync ios)
-
-echo "🔹 ۳. باز کردن Xcode..."
-cd dashboard/ios/App
-if [ -f App.xcodeproj/project.pbxproj ]; then
-  open App.xcodeproj
+if [[ -d "$SCRIPT_DIR/../../dashboard/ios/App" ]]; then
+  IOS_DIR="$(cd -- "$SCRIPT_DIR/../../dashboard/ios" && pwd)"
+elif [[ -d "$SCRIPT_DIR/../../../ios/App" && -d "$SCRIPT_DIR/../../dashboard/package.json" ]]; then
+  IOS_DIR="$(cd -- "$SCRIPT_DIR/../../../ios" && pwd)"
+elif [[ -d "$SCRIPT_DIR/../ios/App" ]]; then
+  IOS_DIR="$(cd -- "$SCRIPT_DIR/../ios" && pwd)"
 else
-  open CapApp-SPM 2>/dev/null || open .
+  echo "iOS project was not found next to the release source." >&2
+  exit 1
 fi
 
-echo "✅ در Xcode:"
-echo "   1) Signing & Capabilities → انتخاب Team"
-echo "   2) Product → Archive"
-echo "   3) Distribute App → Development/Ad Hoc → Export IPA"
+PROJECT="$IOS_DIR/App/App.xcodeproj"
+[[ -d "$PROJECT" ]] || { echo "Xcode project not found: $PROJECT" >&2; exit 1; }
+open "$PROJECT"
+cat <<'EOF'
+In Xcode:
+  1. Select the App target and configure Signing & Capabilities / Team.
+  2. Select Any iOS Device (arm64), then Product > Archive.
+  3. In Organizer, choose Distribute App and the appropriate Development,
+     Ad Hoc, or App Store distribution method; export the IPA.
+
+This script syncs the web assets and opens Xcode. It does not export an IPA automatically.
+EOF
